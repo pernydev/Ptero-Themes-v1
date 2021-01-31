@@ -37,6 +37,49 @@ How do i use them?
 You simple follow the instructions below, mainly consisting of two or three changes you need to make before you build your panel.
 
 
+## Rebuild
+#Install Dependencies
+The following commands will install the necessary dependencies for building your panel.
+
+#Install NodeJS
+TIP
+
+You may have to add sudo to the following commands if you are not root.
+
+#Using Nodesource
+# Ubuntu/Debian
+curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -
+apt install -y nodejs
+
+# CentOS
+curl -sL https://rpm.nodesource.com/setup_12.x | sudo -E bash -
+yum install -y nodejs # CentOS 7
+dnf install -y nodejs # CentOS 8
+By now, you should have NodeJS 12 installed. Make sure this is the case by checking node -v
+
+#Using Node Version Manager(opens new window)
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash
+
+nvm install node
+nvm alias default node
+nvm use node
+node -v should say 12.20.0 or newer
+
+#Install Yarn and Panel Dependencies
+# Install yarn
+npm i -g yarn
+
+# Now you need to make sure you are in the panel directory
+cd /var/www/pterodactyl
+
+# Installs panel build dependencies
+yarn install
+#Build Panel
+Run this in your panel directory to apply changes (usually /var/www/pterodactyl)
+
+# Build panel
+yarn build:production
+
 ## Enola - 1.2.0, 1.2.1, and 1.2.2
 Instructions to install the theme Enola are here
 [Enola 1.2.2(Latest Panel Version)](https://github.com/Lellee/Ptero-Themes-v1/tree/master/latest/Enola)
