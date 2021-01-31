@@ -19,7 +19,7 @@ After that edit the file index.tsx in /var/www/pterodactyl/resources/scripts
 On line 6 at the end of the imports add this
 
 import './main.css';
-After this build the panel, you can find information of how to do that here https://pterodox.com/customization/panel.html
+After this build the panel, you can find information of how to do that scroll down
 
 After that just reload your panel and the theme is applied.
 
@@ -29,7 +29,7 @@ In the file admin.blade.php in /var/www/pterodactyl/resources/views/layouts/
 On line 36 put the text
 
 <link rel="stylesheet" href="https://raw.githubusercontent.com/Lellee/Ptero-Themes-v1/master/latest/!!THEMENAME!!/admin.css">
-After this build the panel, you can find information of how to do that here https://pterodox.com/customization/panel.html
+After this build the panel, you can find information of how to do that scroll down
 
 After that just reload your panel and the theme is applied.
 
