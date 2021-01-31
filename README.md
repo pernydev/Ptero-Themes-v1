@@ -7,6 +7,35 @@ Make sure that the theme you are installing corresponds with the version of the 
 How do i use them?
 You simple follow the instructions below, mainly consisting of two or three changes you need to make before you build your panel.
 
+## Install Theme
+#User Side
+Create a file called main.css in /var/www/pterodactyl/resources/scripts
+
+In that file put this text
+
+@import url(https://raw.githubusercontent.com/Lellee/Ptero-Themes-v1/master/latest/!!THEMENAME!!/user.css);
+After that edit the file index.tsx in /var/www/pterodactyl/resources/scripts
+
+On line 6 at the end of the imports add this
+
+import './main.css';
+After this build the panel, you can find information of how to do that here https://pterodox.com/customization/panel.html
+
+After that just reload your panel and the theme is applied.
+
+#Admin Side
+In the file admin.blade.php in /var/www/pterodactyl/resources/views/layouts/
+
+On line 36 put the text
+
+<link rel="stylesheet" href="https://raw.githubusercontent.com/Lellee/Ptero-Themes-v1/master/latest/!!THEMENAME!!/admin.css">
+After this build the panel, you can find information of how to do that here https://pterodox.com/customization/panel.html
+
+After that just reload your panel and the theme is applied.
+
+How do i use them?
+You simple follow the instructions below, mainly consisting of two or three changes you need to make before you build your panel.
+
 
 ## Enola - 1.2.0, 1.2.1, and 1.2.2
 Instructions to install the theme Enola are here
