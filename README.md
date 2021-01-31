@@ -14,6 +14,8 @@ Create a file called main.css in /var/www/pterodactyl/resources/scripts
 In that file put this text
 
 @import url(https://raw.githubusercontent.com/Lellee/Ptero-Themes-v1/master/latest/!!THEMENAME!!/user.css);
+
+
 After that edit the file index.tsx in /var/www/pterodactyl/resources/scripts
 
 On line 6 at the end of the imports add this
