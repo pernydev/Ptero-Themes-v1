@@ -2,14 +2,14 @@
 /* Changes these to change the colors of the panel!!! */
 
 :root {
-  --main-bg-color: #292841 !important;
-  --secondary-bg-color: #242338 !important;
-  --secondary-bg-color-alt: #1e1d2d !important;
-  --accent-color: #7289da !important;
-  --accent-secondary-color: #413f66 !important;
-  --text-color: #fafafa !important;
-  --border-radius: 15px !important;
-}
+	--main-bg-color: #1a1a1a !important;
+	--secondary-bg-color: #000000 !important;
+	--secondary-bg-color-alt: #1e1d2d !important;
+	--accent-color: #7289da !important;
+	--accent-secondary-color: #242424 !important;
+	--text-color: #fafafa !important;
+	--border-radius: 15px !important;
+  }
 
 /* Changes Background */
 
