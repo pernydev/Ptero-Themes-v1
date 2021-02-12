@@ -2,10 +2,10 @@
 /* Changes these to change the colors of the panel!!! */
 
 :root {
-	--main-bg-color: #1a1a1a !important;
+	--main-bg-color: #0f0f0f !important;
 	--secondary-bg-color: #000000 !important;
-	--secondary-bg-color-alt: #1e1d2d !important;
-	--accent-color: #7289da !important;
+	--secondary-bg-color-alt: #000000 !important;
+	--accent-color: #ffffff !important;
 	--accent-secondary-color: #242424 !important;
 	--text-color: #fafafa !important;
 	--border-radius: 15px !important;
