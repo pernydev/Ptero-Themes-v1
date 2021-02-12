@@ -3,11 +3,11 @@
 
 :root {
 	--main-bg-color: #0f0f0f !important;
-	--secondary-bg-color: #000000 !important;
-	--secondary-bg-color-alt: #000000 !important;
-	--accent-color: #ffffff !important;
+	--secondary-bg-color: #292929 !important;
+	--secondary-bg-color-alt: #292929 !important;
+	--accent-color: #d6d6d6 !important;
 	--accent-secondary-color: #242424 !important;
-	--text-color: #7e7e7e !important;
+	--text-color: #acacac !important;
 	--border-radius: 15px !important;
   }
 
