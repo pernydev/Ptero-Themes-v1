@@ -1,0 +1,457 @@
+const indexjs = require("../index.js");
+const adminjs = require("./admin.js");
+const fs = require("fs");
+const ejs = require("ejs");
+const fetch = require('node-fetch');
+const NodeCache = require( "node-cache" );
+const myCache = new NodeCache({ deleteOnExpire: true, stdTTL: 59 });
+
+module.exports.load = async function(app, db) {
+  app.get("/api", async (req, res) => {
+    let settings = await check(req, res);
+    if (!settings) return;
+    res.send(
+      {
+        "status": true
+      }
+    );
+  });
+
+  app.get("/api/userinfo", async (req, res) => {
+    let settings = await check(req, res);
+    if (!settings) return;
+
+    if (!req.query.id) return res.send({status: "missing id"});
+
+    if (!(await db.get("users-" + req.query.id))) return res.send({status: "invalid id"});
+
+    let newsettings = JSON.parse(fs.readFileSync("./settings.json").toString());
+
+    if (newsettings.api.client.oauth2.link.slice(-1) == "/")
+      newsettings.api.client.oauth2.link = newsettings.api.client.oauth2.link.slice(0, -1);
+  
+    if (newsettings.api.client.oauth2.callbackpath.slice(0, 1) !== "/")
+      newsettings.api.client.oauth2.callbackpath = "/" + newsettings.api.client.oauth2.callbackpath;
+    
+    if (newsettings.pterodactyl.domain.slice(-1) == "/")
+      newsettings.pterodactyl.domain = newsettings.pterodactyl.domain.slice(0, -1);
+    
+    let packagename = await db.get("package-" + req.query.id);
+    let package = newsettings.api.client.packages.list[packagename ? packagename : newsettings.api.client.packages.default];
+    package["name"] = packagename;
+
+    let pterodactylid = await db.get("users-" + req.query.id);
+    let userinforeq = await fetch(
+      newsettings.pterodactyl.domain + "/api/application/users/" + pterodactylid + "?include=servers",
+        {
+          method: "get",
+          headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${newsettings.pterodactyl.key}` }
+        }
+      );
+    if (await userinforeq.statusText == "Not Found") {
+        console.log("[WEBSITE] An error has occured while attempting to get a user's information");
+        console.log("- Discord ID: " + req.query.id);
+        console.log("- Pterodactyl Panel ID: " + pterodactylid);
+        return res.send({ status: "could not find user on panel" });
+    }
+    let userinfo = JSON.parse(await userinforeq.text());
+
+    res.send({
+      status: "success",
+      package: package,
+      extra: await db.get("extra-" + req.query.id) ? await db.get("extra-" + req.query.id) : {
+        ram: 0,
+        disk: 0,
+        cpu: 0,
+        servers: 0
+      },
+      userinfo: userinfo
+    });
+  });
+
+  app.post("/api/setplan", async (req, res) => {
+    let settings = await check(req, res);
+    if (!settings) return;
+
+    if (!req.body) return res.send({status: "missing body"});
+
+    if (typeof req.body.id !== "string") return res.send({status: "missing id"});
+
+    if (!(await db.get("users-" + req.body.id))) return res.send({status: "invalid id"});
+
+    if (typeof req.body.package !== "string") {
+      await db.delete("package-" + req.body.id);
+      adminjs.suspend(req.body.id);
+      return res.send({status: "success"});
+    } else {
+      let newsettings = JSON.parse(fs.readFileSync("./settings.json").toString());
+      if (!newsettings.api.client.packages.list[req.body.package]) return res.send({status: "invalid package"});
+      await db.set("package-" + req.body.id, req.body.package);
+      adminjs.suspend(req.body.id);
+      return res.send({status: "success"});
+    }
+  });
+
+  app.post("/api/setresources", async (req, res) => {
+    let settings = await check(req, res);
+    if (!settings) return;
+
+    if (!req.body) return res.send({status: "missing body"});
+
+    if (typeof req.body.id !== "string") return res.send({status: "missing id"});
+
+    if (!(await db.get("users-" + req.body.id))) res.send({status: "invalid id"});
+
+    if (typeof req.body.ram == "number" || typeof req.body.disk == "number" || typeof req.body.cpu == "number" || typeof req.body.servers == "number") {
+      let ram = req.body.ram;
+      let disk = req.body.disk;
+      let cpu = req.body.cpu;
+      let servers = req.body.servers;
+
+      let currentextra = await db.get("extra-" + req.body.id);
+      let extra;
+
+      if (typeof currentextra == "object") {
+        extra = currentextra;
+      } else {
+        extra = {
+          ram: 0,
+          disk: 0,
+          cpu: 0,
+          servers: 0
+        }
+      }
+
+      if (typeof ram == "number") {
+        if (ram < 0 || ram > 999999999999999) {
+          return res.send({status: "ram size"});
+        }
+        extra.ram = ram;
+      }
+      
+      if (typeof disk == "number") {
+        if (disk < 0 || disk > 999999999999999) {
+          return res.send({status: "disk size"});
+        }
+        extra.disk = disk;
+      }
+      
+      if (typeof cpu == "number") {
+        if (cpu < 0 || cpu > 999999999999999) {
+          return res.send({status: "cpu size"});
+        }
+        extra.cpu = cpu;
+      }
+
+      if (typeof servers == "number") {
+        if (servers < 0 || servers > 999999999999999) {
+          return res.send({status: "server size"});
+        }
+        extra.servers = servers;
+      }
+      
+      if (extra.ram == 0 && extra.disk == 0 && extra.cpu == 0 && extra.servers == 0) {
+        await db.delete("extra-" + req.body.id);
+      } else {
+        await db.set("extra-" + req.body.id, extra);
+      }
+
+      adminjs.suspend(req.body.id);
+      return res.send({status: "success"});
+    } else {
+      res.send({status: "missing variables"});
+    }
+  });  
+  app.post("/api/removeresources", async (req, res) => {
+    let settings = await check(req, res);
+    if (!settings) return;
+
+    if (!req.body) return res.send({status: "missing body"});
+
+    if (typeof req.body.id !== "string") return res.send({status: "missing id"});
+
+    if (!(await db.get("users-" + req.body.id))) res.send({status: "invalid id"});
+
+    if (typeof req.body.ram == "number" || typeof req.body.disk == "number" || typeof req.body.cpu == "number" || typeof req.body.servers == "number") {
+      let ram = req.body.ram;
+      let disk = req.body.disk;
+      let cpu = req.body.cpu;
+      let servers = req.body.servers;
+
+      let currentextra = await db.get("extra-" + req.body.id);
+      let extra;
+
+      if (typeof currentextra == "object") {
+        extra = currentextra;
+      } else {
+        extra = {
+          ram: 0,
+          disk: 0,
+          cpu: 0,
+          servers: 0
+        }
+      }
+
+      if (typeof ram == "number") {
+        if (ram < 0 || ram > 999999999999999) {
+          return res.send({status: "ram size"});
+        }
+        extra.ram = extra.ram - ram;
+      }
+      
+      if (typeof disk == "number") {
+        if (disk < 0 || disk > 999999999999999) {
+          return res.send({status: "disk size"});
+        }
+        extra.disk = extra.disk - disk;
+      }
+      
+      if (typeof cpu == "number") {
+        if (cpu < 0 || cpu > 999999999999999) {
+          return res.send({status: "cpu size"});
+        }
+        extra.cpu = extra.cpu - cpu;
+      }
+
+      if (typeof servers == "number") {
+        if (servers < 0 || servers > 999999999999999) {
+          return res.send({status: "server size"});
+        }
+        extra.servers = extra.servers - servers;
+      }
+      
+      if (extra.ram == 0 && extra.disk == 0 && extra.cpu == 0 && extra.servers == 0) {
+        res.send({status: "invalid amount"});
+      } else {
+        await db.set("extra-" + req.body.id, extra);
+      }
+
+      adminjs.suspend(req.body.id);
+      return res.send({status: "success"});
+    } else {
+      res.send({status: "missing variables"});
+    }
+  }); 
+  app.get("/dogift", async (req, res) => {
+    if (!req.session.pterodactyl) return res.send("Not logged in.");
+    if(req.query.ram.includes("-")) return res.send("Invalid number.");
+      if(req.query.ram.includes("+")) return res.send("Invalid number.");
+    let theme = indexjs.get(req);
+
+    let newsettings = JSON.parse(fs.readFileSync("./settings.json").toString());
+      let redirectlink = "/"; // fail redirect link
+      if(isNaN(req.query.id)) return res.send("Invalid user!");
+      if(isNaN(req.query.ram)) return res.send("Invalid ram amount!");
+      if (req.query.id && req.query.ram) {
+        let extra = await db.get("extra-" + req.session.userinfo.id)
+        let ram = extra.ram
+        let usr2 = await db.get("extra-" + req.query.id)
+        if(usr2 == null) return res.send("That is not a user!");
+        if(ram < 100) return res.send("You need to gift at least 100MB!");
+        if(ram == null) return res.send("Stop tryna gift default plan away!");
+        if(req.query.ram < 100) return res.send("You need to gift at least 100MB!");
+        if(ram >= req.query.ram) {
+          let u2extra = await db.get("extra-" + req.query.id)
+
+          u2extra.ram = +u2extra.ram + +req.query.ram;
+          db.set("extra-" + req.query.id, u2extra)
+          extra.ram = +extra.ram - +req.query.ram;
+          db.set("extra-" + req.session.userinfo.id, extra)
+          res.send("Gift completed!")
+        }else{
+          res.send("You cannot afford this gift!")
+        }
+
+        } else {
+          res.redirect(`${redirectlink}?err=NOTANUMBER`);
+        }
+        
+  });
+  app.get("/dogiftdisk", async (req, res) => {
+    if (!req.session.pterodactyl) return res.send("Not logged in.");
+    
+    let theme = indexjs.get(req);
+
+    let newsettings = JSON.parse(fs.readFileSync("./settings.json").toString());
+      let redirectlink = "/"; // fail redirect link
+      if(isNaN(req.query.id)) return res.send("Invalid user!");
+      if(isNaN(req.query.disk)) return res.send("Invalid disk amount!");
+      if(req.query.disk.includes("-")) return res.send("Invalid number.");
+      if(req.query.disk.includes("+")) return res.send("Invalid number.");
+      if (req.query.id && req.query.disk) {
+        let extra = await db.get("extra-" + req.session.userinfo.id)
+        let disk = extra.disk
+        let usr2 = await db.get("extra-" + req.query.id)
+        if(usr2 == null) return res.send("That is not a user!");
+        if(disk == null) return res.send("Stop tryna gift default plan away!");
+        if(disk < 100) return res.send("You need to gift at least 100MB!");
+        if(req.query.disk < 100) return res.send("You need to gift at least 100MB!");
+        if(disk >= req.query.disk) {
+          let u2extra = await db.get("extra-" + req.query.id)
+
+          u2extra.disk = +u2extra.disk + +req.query.disk;
+          db.set("extra-" + req.query.id, u2extra)
+          extra.disk = +extra.disk - +req.query.disk;
+          db.set("extra-" + req.session.userinfo.id, extra)
+          res.send("Gift completed!")
+        }else{
+          res.send("You cannot afford this gift!")
+        }
+
+        } else {
+          res.redirect(`${redirectlink}?err=NOTANUMBER`);
+        }
+        
+  });
+  app.get("/dogiftcpu", async (req, res) => {
+    if (!req.session.pterodactyl) return res.send("Not logged in.");
+    if(req.query.cpu.includes("-")) return res.send("Invalid number.");
+      if(req.query.cpu.includes("+")) return res.send("Invalid number.");
+    let theme = indexjs.get(req);
+
+    let newsettings = JSON.parse(fs.readFileSync("./settings.json").toString());
+      let redirectlink = "/"; // fail redirect link
+      if(isNaN(req.query.id)) return res.send("Invalid user!");
+      if(isNaN(req.query.cpu)) return res.send("Invalid cpu amount!");
+      if (req.query.id && req.query.cpu) {
+        let extra = await db.get("extra-" + req.session.userinfo.id)
+        let cpu = extra.cpu
+        let usr2 = await db.get("extra-" + req.query.id)
+        if(cpu == null) return res.send("Stop tryna gift default plan away!");
+        if(usr2 == null) return res.send("That is not a user!");
+        if(cpu < 2) return res.send("You need to gift at least 2%!");
+        if(cpu >= req.query.cpu) {
+          let u2extra = await db.get("extra-" + req.query.id)
+
+          u2extra.cpu = +u2extra.cpu + +req.query.cpu;
+          db.set("extra-" + req.query.id, u2extra)
+          extra.cpu = +extra.cpu - +req.query.cpu;
+          db.set("extra-" + req.session.userinfo.id, extra)
+          res.send("Gift completed!")
+        }else{
+          res.send("You cannot afford this gift!")
+        }
+
+        } else {
+          res.redirect(`${redirectlink}?err=NOTANUMBER`);
+        }
+        
+  });
+
+app.get("/api/updateCoins", async (req, res) => {
+  if (!req.session.pterodactyl) return res.send("Not logged in.");
+  let userinfo = req.session.userinfo
+  if(myCache.get(`coins_${userinfo.id}`) === true) return res.send("You are sending too many requests!");
+  myCache.set(`coins_${userinfo.id}`, true, 59);
+  if(await db.get(`coins-${req.session.userinfo.id}`) == null) {
+    await db.set(`coins-${req.session.userinfo.id}`, 0)
+  }else{
+    let e = await db.get(`coins-${req.session.userinfo.id}`)
+    e = +e + 1
+    await db.set(`coins-${req.session.userinfo.id}`, +e)
+  }
+  let e = await db.get(`coins-${req.session.userinfo.id}`)
+  res.send(``+e.toString())
+})
+
+
+  app.post("/api/addresources", async (req, res) => {
+    let settings = await check(req, res);
+    if (!settings) return;
+
+    if (!req.body) return res.send({status: "missing body"});
+
+    if (typeof req.body.id !== "string") return res.send({status: "missing id"});
+
+    if (!(await db.get("users-" + req.body.id))) res.send({status: "invalid id"});
+
+    if (typeof req.body.ram == "number" || typeof req.body.disk == "number" || typeof req.body.cpu == "number" || typeof req.body.servers == "number") {
+      let ram = req.body.ram;
+      let disk = req.body.disk;
+      let cpu = req.body.cpu;
+      let servers = req.body.servers;
+
+      let currentextra = await db.get("extra-" + req.body.id);
+      let extra;
+
+      if (typeof currentextra == "object") {
+        extra = currentextra;
+      } else {
+        extra = {
+          ram: 0,
+          disk: 0,
+          cpu: 0,
+          servers: 0
+        }
+      }
+
+      if (typeof ram == "number") {
+        if (ram < 0 || ram > 999999999999999) {
+          return res.send({status: "ram size"});
+        }
+        extra.ram = extra.ram + ram;
+      }
+      
+      if (typeof disk == "number") {
+        if (disk < 0 || disk > 999999999999999) {
+          return res.send({status: "disk size"});
+        }
+        extra.disk = extra.disk + disk;
+      }
+      
+      if (typeof cpu == "number") {
+        if (cpu < 0 || cpu > 999999999999999) {
+          return res.send({status: "cpu size"});
+        }
+        extra.cpu = extra.cpu + cpu;
+      }
+
+      if (typeof servers == "number") {
+        if (servers < 0 || servers > 999999999999999) {
+          return res.send({status: "server size"});
+        }
+        extra.servers = extra.servers + servers;
+      }
+      
+      if (extra.ram == 0 && extra.disk == 0 && extra.cpu == 0 && extra.servers == 0) {
+        res.send({status: "invalid amount"});
+      } else {
+        await db.set("extra-" + req.body.id, extra);
+      }
+
+      adminjs.suspend(req.body.id);
+      return res.send({status: "success"});
+    } else {
+      res.send({status: "missing variables"});
+    }
+  });  
+
+
+  async function check(req, res) {
+    let settings = JSON.parse(fs.readFileSync("./settings.json").toString());
+    if (settings.api.client.api.enabled == true) {
+      let auth = req.headers['authorization'];
+      if (auth) {
+        if (auth == "Bearer " + settings.api.client.api.code) {
+          return settings;
+        };
+      };
+    }
+    let theme = indexjs.get(req);
+    ejs.renderFile(
+      `./themes/${theme.name}/${theme.settings.notfound}`, 
+      await eval(indexjs.renderdataeval),
+      null,
+    function (err, str) {
+      delete req.session.newaccount;
+      if (err) {
+        console.log(`[WEBSITE] An error has occured on path ${req._parsedUrl.pathname}:`);
+        console.log(err);
+        return res.send("An error has occured while attempting to load this page. Please contact an administrator to fix this.");
+      };
+      res.status(404);
+      res.send(str);
+    });
+    return null;
+  }
+};
