@@ -27,7 +27,7 @@ This theme is a recolor of the panel that you can edit, more information here
 
 ## Gray - 1.2.0, 1.2.1, 1.2.2 NOTE: DARK ITS IN BETA!!
 This theme is a recolor of the panel that you can edit, more information here
-[Dark 1.2.2(Latest Panel Version)](https://github.com/Lellee/Ptero-Themes-v1/tree/master/latest/Gray)
+[Gray 1.2.2(Latest Panel Version)](https://github.com/Lellee/Ptero-Themes-v1/tree/master/latest/Gray)
 ![Preview](https://img.lellis.xyz/q5Sm76U.png)
 ![Preview](https://img.lellis.xyz/fd5NEyg.png)
 ## If you have suggestions or issues dm me on discord, Lellis#9405
