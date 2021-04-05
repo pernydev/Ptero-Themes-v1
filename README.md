@@ -37,17 +37,14 @@ Contact `Lellis#9405`
 ## Previews 1.1.x - 1.3.x
 
 ## Enola - 1.1.x - 1.3.x
-Instructions to install the theme Enola are here
 ![Preview](./preview/enola.png)
 
 ## Twilight - 1.1.x - 1.3.x
-Instructions to install the theme Twilight are here
 ![Preview](./preview/twilight.png)
 
 ## Recolor - 1.1.x - 1.3.x
-This theme is a recolor of the panel that you can edit, more information here
+This theme is a recolor of the panel that you can edit
 [Recolor](https://github.com/Lellee/Ptero-Themes-v1/tree/master/latest/Recolor)
 
 ## Dracula - 1.1.x - 1.3.x
-This theme is a recolor of the panel that you can edit, more information here
 ![Preview](./preview/Dracula2.png)
