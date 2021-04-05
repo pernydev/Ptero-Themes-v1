@@ -4,6 +4,8 @@ Create a file in `/var/www/pterodactyl/resources/scripts` called `main.css`
 
 In `main.css` put ```@import url(https://lellee.github.io/Ptero-Themes-v1/latest/!!THEMENAME!!/user.css);```
 
+Edit `/var/www/pterodactyl/resources/scripts/index.tsx` add ```import './main.css';``` at line 6
+
 
 
 
