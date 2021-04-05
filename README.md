@@ -9,7 +9,7 @@ In `main.css` put ```@import url(https://lellee.github.io/Ptero-Themes-v1/latest
 
 Edit `/var/www/pterodactyl/resources/scripts/index.tsx` add ```import './main.css';``` at line 6
 
-## Admin panel
+## Admin Panel
 
 Edit `admin.blade.php` in `/var/www/pterodactyl/resources/views/layouts/`
 
