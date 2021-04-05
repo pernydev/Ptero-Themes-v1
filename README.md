@@ -17,7 +17,7 @@ Edit `/var/www/pterodactyl/resources/scripts/index.tsx` add ```import './main.cs
 
 Edit `admin.blade.php` in `/var/www/pterodactyl/resources/views/layouts/`
 
-Go to line 36 and put ```@import url(https://lellee.github.io/Ptero-Themes-v1/latest/!!THEMENAME!!/admin.css);```
+Go to line 36 and put ```<link rel="stylesheet" href=https://lellee.github.io/Ptero-Themes-v1/latest/!!THEMENAME!!/admin.css>```
 
 `!!THEMENAME!! replace with example, Dracula`
 
