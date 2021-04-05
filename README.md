@@ -2,6 +2,10 @@
 
 Create a file in `/var/www/pterodactyl/resources/scripts` called `main.css`
 
+In `main.css` put ```@import url(https://lellee.github.io/Ptero-Themes-v1/latest/!!THEMENAME!!/user.css);```
+
+
+
 
 ## Previews 1.1.x - 1.3.x
 
