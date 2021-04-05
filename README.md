@@ -28,7 +28,9 @@ Install Panel Dependencies `yarn install && yarn add @emotion/react`
 
 Build `yarn build:production`
 
+## Help
 
+Contact `Lellis#9405`
 
 
 ## Previews 1.1.x - 1.3.x
@@ -51,5 +53,3 @@ This theme is a recolor of the panel that you can edit, more information here
 This theme is a recolor of the panel that you can edit, more information here
 [Dracula 1.2.2(Latest Panel Version)](https://github.com/Lellee/Ptero-Themes-v1/tree/master/latest/Dracula)
 ![Preview](./preview/Dracula2.png)
-
-## If you have suggestions or issues dm me on discord, Lellis#9405
