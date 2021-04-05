@@ -5,6 +5,7 @@
 Create a file in `/var/www/pterodactyl/resources/scripts` called `main.css`
 
 In `main.css` put ```@import url(https://lellee.github.io/Ptero-Themes-v1/latest/!!THEMENAME!!/user.css);```
+`!!THEMENAME!! replace with example, Dracula`
 
 Edit `/var/www/pterodactyl/resources/scripts/index.tsx` add ```import './main.css';``` at line 6
 
@@ -13,6 +14,7 @@ Edit `/var/www/pterodactyl/resources/scripts/index.tsx` add ```import './main.cs
 Edit `admin.blade.php` in `/var/www/pterodactyl/resources/views/layouts/`
 
 Go to line 36 and put ```@import url(https://lellee.github.io/Ptero-Themes-v1/latest/!!THEMENAME!!/admin.css);```
+`!!THEMENAME!! replace with example, Dracula`
 
 ## Rebuild panel !!ONLY UBUNTU!!
 
