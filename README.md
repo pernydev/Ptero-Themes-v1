@@ -1,3 +1,6 @@
+## BREAK PANEL?? (IMPORTANT)
+This will not break your panel unless you do any wrong, If any happends its easy to remove, Just follow upgrade guide on pterodacty.io. THIS IS NOT OFFICIAL THEMES
+
 ## Install Help
 
 ## User Panel
