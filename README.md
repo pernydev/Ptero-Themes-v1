@@ -1,3 +1,8 @@
+## Install Help
+
+Create a file in `/var/www/pterodactyl/resources/scripts` called `main.css`
+
+
 ## Previews 1.1.x - 1.3.x
 
 ## Enola - 1.1.x - 1.3.x 
