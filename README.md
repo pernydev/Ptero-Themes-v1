@@ -47,4 +47,4 @@ This theme is a recolor of the panel that you can edit
 [Recolor](https://github.com/Lellee/Ptero-Themes-v1/tree/master/latest/Recolor)
 
 ## Dracula - 1.1.x - 1.3.x
-![Preview](./preview/Dracula2.png)
+![Preview](./preview/Dracula.png)
