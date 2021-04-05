@@ -22,7 +22,6 @@ Install NodeJS `curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash - 
 
 Install Yarn Dependencies `npm i -g yarn`
 
-Run `node -v` make sure it say 12.x.x or newer
 
 Steps after tihs message, Make sure you are in `/var/www/pterodactyl`
 
