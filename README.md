@@ -7,7 +7,7 @@ This will not break your panel unless you do any wrong, If any happends its easy
 
 Create a file in `/var/www/pterodactyl/resources/scripts` called `main.css`
 
-In `main.css` put ```@import url(https://lellee.github.io/Ptero-Themes-v1/latest/!!THEMENAME!!/user.css);```
+In `main.css` put ```@import url(https://lellisv2.github.io/Ptero-Themes-v1/latest/!!THEMENAME!!/user.css);```
 
 `!!THEMENAME!! replace with example, Dracula`
 
@@ -17,7 +17,7 @@ Edit `/var/www/pterodactyl/resources/scripts/index.tsx` add ```import './main.cs
 
 Edit `admin.blade.php` in `/var/www/pterodactyl/resources/views/layouts/`
 
-Go to line 36 and put ```<link rel="stylesheet" href="https://lellee.github.io/Ptero-Themes-v1/latest/!!THEMENAME!!/admin.css">```
+Go to line 36 and put ```<link rel="stylesheet" href="https://lellisv2.github.io/Ptero-Themes-v1/latest/!!THEMENAME!!/admin.css">```
 
 `!!THEMENAME!! replace with example, Dracula`
 
