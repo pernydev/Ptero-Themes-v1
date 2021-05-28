@@ -12,12 +12,7 @@
 /* Changes Background */
 
 body, .content-wrapper {
-	body {
-		background-image: url('https://media.discordapp.net/attachments/762308102409945119/847806785889107978/Mineton-Beaty_Full.jpg?width=1170&height=658');
-		background-repeat: no-repeat;
-		background-attachment: fixed;
-		background-size: 100% 100%;
-}
+	background-color: var(--main-bg-color) !important;
 }
 
 
